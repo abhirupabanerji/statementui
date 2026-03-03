@@ -231,21 +231,21 @@ if uploaded_file:
         expenses_df = df_clean[df_clean["debit"] > 0].copy()
         category_summary = expenses_df.groupby("category")["debit"].sum().reset_index()
 
-        st.markdown('<div class="section-title">Expense visualizations</div>', unsafe_allow_html=True)
+        st.markdown('<div class="section-title">Expenses Distribution</div>', unsafe_allow_html=True)
         ch1, ch2 = st.columns(2)
         with ch1:
             fig1 = px.pie(category_summary, values="debit", names="category",title="Expenditure chart", hole=0.40)
             st.plotly_chart(fig1, use_container_width=True)
 
         with ch2:
-            fig2 = px.bar(category_summary, x="debit", y="category", orientation="h", text="debit", title="Expenses by Category (₹)", color="category")
+            fig2 = px.bar(category_summary, x="debit", y="category", orientation="h", text="debit", title="Expenses by Category", color="category")
             fig2.update_xaxes(showgrid=True)
             fig2.update_yaxes(showgrid=True)
             fig2.update_traces(textposition="outside")
             st.plotly_chart(fig2, use_container_width=True)
 
         if "payment_method" in df_clean.columns:
-            st.markdown('<div class="section-title">Payment Method Breakdown</div>', unsafe_allow_html=True)
+            st.markdown('<div class="section-title">Payment Method Usage Distribution</div>', unsafe_allow_html=True)
             pm_summary = expenses_df.copy()
             pm_summary["payment_method"] = df_clean.loc[expenses_df.index, "payment_method"]
             pm_group = pm_summary.groupby("payment_method")["debit"].sum().reset_index()
@@ -259,7 +259,7 @@ if uploaded_file:
 
             with ch4:
                 fig4 = px.bar(pm_group, x="Payment Method", y="Amount",
-                              title="Spending by Payment Method (₹)",
+                              title="Most preferred Payment Method",
                               color="Payment Method", text="Amount")
                 fig4.update_xaxes(showgrid=True)
                 fig4.update_yaxes(showgrid=True)
