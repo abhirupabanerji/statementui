@@ -259,7 +259,7 @@ if uploaded_file:
 
             with ch4:
                 fig4 = px.bar(pm_group, x="Payment Method", y="Amount",
-                              title="Most preferred Payment Method",
+                              title="Payment Method used most",
                               color="Payment Method", text="Amount")
                 fig4.update_xaxes(showgrid=True)
                 fig4.update_yaxes(showgrid=True)
