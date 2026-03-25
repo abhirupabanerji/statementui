@@ -1,7 +1,6 @@
 from sklearn.ensemble import IsolationForest
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
-import streamlit as st
 
 def detect_anomalies(df):
     df_copy = df.copy()
