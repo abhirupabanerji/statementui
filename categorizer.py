@@ -1,17 +1,19 @@
 def get_txn_prefix(transaction_id):
     txn = str(transaction_id).upper().strip()
 
-    if txn.startswith("UPI"):
+    if "UPI" in txn:
         return "UPI"
-    elif txn.startswith("NEFT"):
+    elif "NEFT" in txn:
         return "NEFT"
-    elif txn.startswith("IMPS"):
+    elif "IMPS" in txn:
         return "IMPS"
-    elif txn.startswith("CARD"):
+    elif "CARD" in txn or "POS" in txn:
         return "CARD"
     else:
         return "TXN"
 
+
+# ---------------- DESCRIPTION BASED ----------------
 def categorize_by_description(description):
     desc = str(description).lower()
 
@@ -57,26 +59,24 @@ def categorize_by_description(description):
 
     elif any(word in desc for word in [
         "hospital", "pharmacy", "medical", "doctor", "apollo", "1mg",
-        "netmeds", "pharmeasy", "clinic", "health", "dental", "lab",
-        "diagnostic", "medicine", "chemist"
+        "netmeds", "pharmeasy", "clinic", "health"
     ]):
         return "Healthcare"
 
     elif any(word in desc for word in [
-        "school", "college", "university", "course", "udemy", "coursera",
-        "fees", "tuition", "education", "book", "stationery", "byju"
+        "school", "college", "course", "fees", "tuition", "education"
     ]):
         return "Education"
 
     elif any(word in desc for word in [
-        "salary", "sal cr", "neft cr", "income", "interest cr",
-        "dividend", "bonus", "stipend", "credit by", "refund"
+        "salary", "income", "interest", "dividend", "bonus", "stipend",
+        "refund", "cashback"
     ]):
         return "Income"
 
     elif any(word in desc for word in [
-        "emi", "loan", "mortgage", "insurance", "lic", "sip",
-        "mutual fund", "investment", "fd ", "ppf", "nps"
+        "emi", "loan", "insurance", "lic", "sip",
+        "mutual fund", "investment"
     ]):
         return "Finance & Investment"
 
@@ -84,49 +84,35 @@ def categorize_by_description(description):
         return "Miscellaneous"
 
 
+# ---------------- MAIN CATEGORIZATION ----------------
 def categorize(transaction_id, description):
     prefix = get_txn_prefix(transaction_id)
-    desc   = str(description).lower()
+    desc = str(description).lower()
 
+    # -------- NEFT --------
     if prefix == "NEFT":
-        if any(w in desc for w in ["salary", "sal cr", "income", "bonus", "stipend"]):
+        if any(w in desc for w in ["salary", "income", "bonus", "stipend", "refund"]):
             return "Income"
-        elif any(w in desc for w in ["rent", "landlord", "housing", "lease"]):
+        elif any(w in desc for w in ["rent", "lease"]):
             return "Rent"
-        elif any(w in desc for w in ["refund", "reversal", "cashback"]):
-            return "Income"
-        elif any(w in desc for w in ["emi", "loan", "insurance", "lic", "sip", "mutual fund"]):
+        elif any(w in desc for w in ["emi", "loan", "insurance"]):
             return "Finance & Investment"
         else:
-            return "Income"   
+            return "Bank Transfer"   # ✅ FIXED (was always Income)
 
+    # -------- IMPS --------
     elif prefix == "IMPS":
-        if any(w in desc for w in ["rent", "landlord", "housing", "lease", "pg ", "hostel"]):
+        if any(w in desc for w in ["rent", "lease", "pg", "hostel"]):
             return "Rent"
-        elif any(w in desc for w in ["salary", "freelance", "stipend", "income"]):
+        elif any(w in desc for w in ["salary", "income", "freelance", "stipend"]):
             return "Income"
         else:
-            return "Income"  
+            return "Transfer"   # ✅ FIXED (important)
 
+    # -------- CARD --------
     elif prefix == "CARD":
-        if any(w in desc for w in ["netflix", "spotify", "prime", "hotstar", "youtube",
-                                    "zee5", "sonyliv", "subscription", "bookmyshow",
-                                    "pvr", "inox", "gaming", "steam"]):
-            return "Entertainment"
-        elif any(w in desc for w in ["amazon", "flipkart", "myntra", "meesho", "ajio",
-                                      "nykaa", "snapdeal", "shopping", "mall", "retail",
-                                      "store", "purchase", "buy", "dmart"]):
-            return "Shopping"
-        elif any(w in desc for w in ["swiggy", "zomato", "restaurant", "cafe", "food",
-                                      "dominos", "mcdonald", "kfc", "pizza", "burger",
-                                      "bakery", "dining", "biryani"]):
-            return "Food"
-        elif any(w in desc for w in ["electricity", "water", "gas", "broadband", "airtel",
-                                      "jio", "recharge", "bill", "utility", "internet"]):
-            return "Utilities"
-        else:
-            return "Shopping"   # card payments default to shopping
+        return categorize_by_description(description)   # ✅ cleaner logic
 
-    # UPI & TXN — fully rely on description keywords
+    # -------- UPI / OTHERS --------
     else:
         return categorize_by_description(description)
