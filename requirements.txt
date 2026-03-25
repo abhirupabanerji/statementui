@@ -3,3 +3,4 @@ pandas
 plotly.express
 openpyxl #for reading excel files
 bcrypt
+scikit-learn
